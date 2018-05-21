@@ -2549,10 +2549,10 @@
 /* 44 */
 /***/ (function(module, exports) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2560,85 +2560,85 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var LoginFormController = function () {
-	    LoginFormController.$inject = ["$rootScope", "$auth", "$state", "$stateParams", "API", "AclService"];
-	    function LoginFormController($rootScope, $auth, $state, $stateParams, API, AclService) {
-	        "ngInject";
+	  LoginFormController.$inject = ["$rootScope", "$auth", "$state", "$stateParams", "API", "AclService"];
+	  function LoginFormController($rootScope, $auth, $state, $stateParams, API, AclService) {
+	    'ngInject';
 
-	        _classCallCheck(this, LoginFormController);
+	    _classCallCheck(this, LoginFormController);
 
-	        delete $rootScope.me;
+	    delete $rootScope.me;
 
-	        this.$auth = $auth;
-	        this.$state = $state;
-	        this.$stateParams = $stateParams;
-	        this.AclService = AclService;
+	    this.$auth = $auth;
+	    this.$state = $state;
+	    this.$stateParams = $stateParams;
+	    this.AclService = AclService;
 
-	        this.registerSuccess = $stateParams.registerSuccess;
-	        this.successMsg = $stateParams.successMsg;
-	        this.loginfailederror = "";
-	        this.loginfailed = false;
-	        this.unverified = false;
+	    this.registerSuccess = $stateParams.registerSuccess;
+	    this.successMsg = $stateParams.successMsg;
+	    this.loginfailederror = '';
+	    this.loginfailed = false;
+	    this.unverified = false;
+	  }
+
+	  _createClass(LoginFormController, [{
+	    key: '$onInit',
+	    value: function $onInit() {
+	      this.email = '';
+	      this.password = '';
 	    }
+	  }, {
+	    key: 'login',
+	    value: function login() {
+	      var _this = this;
 
-	    _createClass(LoginFormController, [{
-	        key: "$onInit",
-	        value: function $onInit() {
-	            this.email = "";
-	            this.password = "";
+	      this.loginfailederror = '';
+	      this.loginfailed = false;
+	      this.unverified = false;
+
+	      var user = {
+	        email: this.email,
+	        password: this.password
+	      };
+
+	      this.$auth.login(user).then(function (response) {
+	        var data = response.data.data;
+	        var AclService = _this.AclService;
+
+	        angular.forEach(data.userRole, function (value) {
+	          AclService.attachRole(value);
+	        });
+
+	        AclService.setAbilities(data.abilities);
+	        _this.$auth.setToken(response.data);
+	        _this.$state.go('app.landing');
+	      }).catch(this.failedLogin.bind(this));
+	    }
+	  }, {
+	    key: 'failedLogin',
+	    value: function failedLogin(res) {
+	      if (res.status == 401) {
+	        this.loginfailed = true;
+	      } else {
+	        if (res.data.errors.message[0] == 'Email Unverified') {
+	          this.unverified = true;
+	        } else {
+	          // other kinds of error returned from server
+	          for (var error in res.data.errors) {
+	            this.loginfailederror += res.data.errors[error] + ' ';
+	          }
 	        }
-	    }, {
-	        key: "login",
-	        value: function login() {
-	            var _this = this;
+	      }
+	    }
+	  }]);
 
-	            this.loginfailederror = "";
-	            this.loginfailed = false;
-	            this.unverified = false;
-
-	            var user = {
-	                email: this.email,
-	                password: this.password
-	            };
-
-	            this.$auth.login(user).then(function (response) {
-	                var data = response.data.data;
-	                var AclService = _this.AclService;
-
-	                angular.forEach(data.userRole, function (value) {
-	                    AclService.attachRole(value);
-	                });
-
-	                AclService.setAbilities(data.abilities);
-	                _this.$auth.setToken(response.data);
-	                _this.$state.go("app.landing");
-	            }).catch(this.failedLogin.bind(this));
-	        }
-	    }, {
-	        key: "failedLogin",
-	        value: function failedLogin(res) {
-	            if (res.status == 401) {
-	                this.loginfailed = true;
-	            } else {
-	                if (res.data.errors.message[0] == "Email Unverified") {
-	                    this.unverified = true;
-	                } else {
-	                    // other kinds of error returned from server
-	                    for (var error in res.data.errors) {
-	                        this.loginfailederror += res.data.errors[error] + " ";
-	                    }
-	                }
-	            }
-	        }
-	    }]);
-
-	    return LoginFormController;
+	  return LoginFormController;
 	}();
 
 	var LoginFormComponent = exports.LoginFormComponent = {
-	    templateUrl: "./views/app/components/login-form/login-form.component.html",
-	    controller: LoginFormController,
-	    controllerAs: "vm",
-	    bindings: {}
+	  templateUrl: './views/app/components/login-form/login-form.component.html',
+	  controller: LoginFormController,
+	  controllerAs: 'vm',
+	  bindings: {}
 	};
 
 /***/ }),

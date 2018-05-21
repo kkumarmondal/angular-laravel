@@ -52,6 +52,17 @@ export function RoutesConfig($stateProvider, $urlRouterProvider) {
                 }
             }
         })
+        .state("app.landing", {
+            url: "/dashboard",
+            data: {
+                auth: true
+            },
+            views: {
+                "main@app": {
+                    templateUrl: getView("landing")
+                }
+            }
+        })
         .state("app.uimodal", {
             url: "/ui-modal",
             data: {
